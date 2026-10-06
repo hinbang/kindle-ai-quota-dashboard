@@ -17,10 +17,7 @@
             1
           ],
           "dependencies": [],
-          "supported_platforms": [
-            "kindlehf",
-            "kindlepw2"
-          ]
+          "supported_platforms": null
         }
       ]
     }
