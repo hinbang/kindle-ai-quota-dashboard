@@ -3,6 +3,13 @@
   "keepLocalHistory": false,
   "quoteFile": "config/quote.json",
   "weatherFile": "",
+  "knowledgeBase": {
+    "enabled": false,
+    "vaultRoot": "~/KnowledgeBase/kb-vault",
+    "topicLimit": 8,
+    "todayTitleLimit": 5,
+    "trendDays": 7
+  },
   "providers": {
     "deepseek": {
       "enabled": false,

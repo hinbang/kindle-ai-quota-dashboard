@@ -16,6 +16,69 @@ const {
 const { safeError } = require('../src/lib/common.cjs');
 const { ROOT, validateConfig } = require('../src/lib/config.cjs');
 const { collectProblems } = require('../scripts/check-public.cjs');
+const { collectKnowledgeBase } = require('../src/collectors/knowledgebase.cjs');
+
+test('knowledge-base collector aggregates capture folders, today titles, and trends', () => {
+  const vault = fs.mkdtempSync(path.join(os.tmpdir(), 'kindle-kb-test-'));
+  const write = (relative, content, modifiedAt) => {
+    const target = path.join(vault, relative);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, content, 'utf8');
+    if (modifiedAt) fs.utimesSync(target, modifiedAt, modifiedAt);
+    return target;
+  };
+  const now = new Date('2026-10-06T12:00:00+08:00');
+  try {
+    write('catalog/migration/file-manifest.jsonl', [
+      { target_rel: 'capture/materials/converted-md/pdf/1.微信发的文章/a.md' },
+      { target_rel: 'capture/materials/converted-md/pdf/1.微信发的文章/b.md' },
+      { target_rel: 'capture/materials/wechat/集智俱乐部/c.md' },
+      { target_rel: 'capture/materials/legacy-originals/7.书籍/d.pdf' },
+    ].map((row) => JSON.stringify(row)).join('\n'));
+    write('capture/jobs/wechat/集智俱乐部/20261006-090000_集智俱乐部_report.json', JSON.stringify({
+      task_time: '20261006-090000',
+      results: [
+        { status: 'ok', title: '今天的新标题', account: '集智俱乐部', published_at: '2026-10-06 08:30:00' },
+        { status: 'fail', title: '失败内容不展示', account: '集智俱乐部' },
+      ],
+    }));
+    write('capture/jobs/wechat/集智俱乐部/20261005-090000_集智俱乐部_report.json', JSON.stringify({
+      task_time: '20261005-090000',
+      results: [{ status: 'ok', title: '昨天的标题', account: '集智俱乐部' }],
+    }));
+    write('knowledge/lantel/atomic/draft/today.md', '# today', now);
+    write('knowledge/lantel/atomic/draft/old.md', '# old', new Date('2026-09-01T12:00:00+08:00'));
+    write('weknora/lantel/input/atomic/published.md', '# published', now);
+    write('weknora/lantel/state/sync/example.json', JSON.stringify({
+      files: { 'atomic/published.md': { synced_at: '2026-10-06T10:00:00+08:00' } },
+    }));
+
+    const result = collectKnowledgeBase({
+      enabled: true,
+      vaultRoot: vault,
+      topicLimit: 8,
+      todayTitleLimit: 5,
+      trendDays: 7,
+    }, now);
+
+    assert.equal(result.ok, true);
+    assert.deepEqual(result.topics.map((item) => [item.name, item.count]), [
+      ['微信发的文章', 2],
+      ['公众号／集智俱乐部', 1],
+      ['书籍', 1],
+    ]);
+    assert.equal(result.today.total, 1);
+    assert.equal(result.today.items[0].title, '今天的新标题');
+    assert.equal(result.trends.recentSources, 2);
+    assert.equal(result.trends.recentAtomicCards, 1);
+    assert.equal(result.trends.pendingReview, 2);
+    assert.equal(result.trends.published, 1);
+    assert.equal(result.trends.synced, 1);
+    assert.equal(result.trends.daily.length, 7);
+  } finally {
+    fs.rmSync(vault, { recursive: true, force: true });
+  }
+});
 
 test('demo snapshot passes the public schema', () => {
   const snapshot = demoSnapshot();
@@ -135,12 +198,14 @@ test('browser runtime restores a valid cache and rejects older replacement data'
   const storage = new Map();
   const fresh = demoSnapshot();
   runBrowserRuntime(fresh, storage);
-  const cacheKey = 'kindle_ai_quota_cache_v1';
+  const cacheKey = 'kindle_ai_quota_cache_v2';
   const cached = storage.get(cacheKey);
   assert.ok(cached, 'fresh data should be cached');
 
   const restored = runBrowserRuntime(null, storage);
-  assert.equal(restored.nodes.get('#deepSeekBalance').textContent, '¥ 12.34');
+  assert.match(restored.nodes.get('#aiSummary').textContent, /DeepSeek.*12\.34/);
+  assert.match(restored.nodes.get('#topicList').innerHTML, /科技创新/);
+  assert.match(restored.nodes.get('#todayList').innerHTML, /世界模型/);
 
   const older = demoSnapshot();
   older.updatedAt = '2025-01-01T00:00:00+08:00';

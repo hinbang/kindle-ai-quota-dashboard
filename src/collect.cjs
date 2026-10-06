@@ -6,6 +6,7 @@ const { collectClaude } = require('./collectors/claude.cjs');
 const { collectCodex } = require('./collectors/codex.cjs');
 const { collectDeepSeek } = require('./collectors/deepseek.cjs');
 const { collectKimi } = require('./collectors/kimi.cjs');
+const { collectKnowledgeBase } = require('./collectors/knowledgebase.cjs');
 const { ROOT, loadConfig } = require('./lib/config.cjs');
 const {
   isoBeijing,
@@ -105,6 +106,44 @@ function demoSnapshot() {
       text: '把无人走过的路，踩成后来人的近路。',
       source: '开源演示',
     },
+    knowledgeBase: {
+      ok: true,
+      fetchedAt: now,
+      topicFiles: 1284,
+      topics: [
+        { name: '科技创新', count: 326 },
+        { name: '人工智能', count: 274 },
+        { name: '人才发展', count: 196 },
+        { name: '产业政策', count: 173 },
+        { name: '区域创新', count: 126 },
+        { name: '其他', count: 189 },
+      ],
+      today: {
+        total: 3,
+        items: [
+          { title: '世界模型开始转向任务相关特征预测', account: '示例采集' },
+          { title: '智能体正在补齐产业维护闭环', account: '示例采集' },
+          { title: '科技与产业融合进入制度协同阶段', account: '示例采集' },
+        ],
+      },
+      trends: {
+        recentSources: 34,
+        recentAtomicCards: 18,
+        pendingReview: 42,
+        published: 86,
+        synced: 82,
+        daily: [
+          { date: '2026-09-30', sources: 2, atomicCards: 1 },
+          { date: '2026-10-01', sources: 4, atomicCards: 2 },
+          { date: '2026-10-02', sources: 3, atomicCards: 2 },
+          { date: '2026-10-03', sources: 7, atomicCards: 4 },
+          { date: '2026-10-04', sources: 5, atomicCards: 2 },
+          { date: '2026-10-05', sources: 6, atomicCards: 3 },
+          { date: '2026-10-06', sources: 7, atomicCards: 4 },
+        ],
+      },
+      error: null,
+    },
     sources: {
       claude: {
         ok: true,
@@ -148,16 +187,18 @@ function demoSnapshot() {
 
 async function realSnapshot(config) {
   const providers = config.providers || {};
-  const [claude, codex, kimi, deepseek] = await Promise.all([
+  const [claude, codex, kimi, deepseek, knowledgeBase] = await Promise.all([
     collectClaude(providers.claude),
     collectCodex(providers.codex),
     collectKimi(providers.kimi),
     collectDeepSeek(providers.deepseek),
+    Promise.resolve(collectKnowledgeBase(config.knowledgeBase || {})),
   ]);
   return {
     updatedAt: isoBeijing(),
     weather: readWeather(config.weatherFile),
     quote: readQuote(config.quoteFile),
+    knowledgeBase,
     sources: { claude, codex, kimi, deepseek },
   };
 }
@@ -192,6 +233,11 @@ function validateSnapshot(snapshot) {
   }
   if (!snapshot.weather || typeof snapshot.weather.ok !== 'boolean') {
     throw new Error('快照缺少 weather');
+  }
+  if (!snapshot.knowledgeBase || typeof snapshot.knowledgeBase.ok !== 'boolean' ||
+      !Array.isArray(snapshot.knowledgeBase.topics) || !snapshot.knowledgeBase.today ||
+      !snapshot.knowledgeBase.trends || !Array.isArray(snapshot.knowledgeBase.trends.daily)) {
+    throw new Error('快照缺少 knowledgeBase 或字段不完整');
   }
   for (const name of SOURCE_NAMES) {
     const source = snapshot.sources[name];
