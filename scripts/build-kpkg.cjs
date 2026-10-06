@@ -15,6 +15,7 @@ const dashboardUrl = String(process.env.DASHBOARD_URL || '').trim().replace(/\/+
 function copyTree(source, destination) {
   fs.mkdirSync(destination, { recursive: true });
   for (const entry of fs.readdirSync(source, { withFileTypes: true })) {
+    if (entry.name.startsWith('._') || entry.name === '.DS_Store') continue;
     const from = path.join(source, entry.name);
     const to = path.join(destination, entry.name);
     if (entry.isDirectory()) copyTree(from, to);
@@ -39,6 +40,7 @@ const command = process.platform === 'win32' ? 'tar.exe' : 'tar';
 const result = spawnSync(command, ['-czf', output, '-C', stageDir, '.'], {
   encoding: 'utf8',
   windowsHide: true,
+  env: { ...process.env, COPYFILE_DISABLE: '1' },
 });
 if (result.status !== 0) {
   throw new Error(result.stderr || result.stdout || `tar 退出码 ${result.status}`);
