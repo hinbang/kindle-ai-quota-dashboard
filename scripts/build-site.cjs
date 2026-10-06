@@ -54,7 +54,7 @@ const manifest = {
         url: publicArtifact.split(path.sep).pop(),
         version: version.split('.').map(Number),
         dependencies: [],
-        supported_platforms: ['kindlehf', 'kindlepw2'],
+        supported_platforms: null,
       }],
     },
   },
