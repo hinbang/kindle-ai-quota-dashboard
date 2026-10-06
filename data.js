@@ -1,5 +1,5 @@
 window.DASH_DATA = {
-  "updatedAt": "2026-10-07T00:20:27.882+08:00",
+  "updatedAt": "2026-10-07T00:58:00.480+08:00",
   "weather": {
     "ok": false,
     "description": null,
@@ -11,13 +11,13 @@ window.DASH_DATA = {
     "windDir": null,
     "place": null,
     "observedAt": null,
-    "fetchedAt": "2026-10-07T00:20:27.882+08:00",
+    "fetchedAt": "2026-10-07T00:58:00.480+08:00",
     "error": "未配置天气文件"
   },
   "quote": null,
   "knowledgeBase": {
     "ok": true,
-    "fetchedAt": "2026-10-06T16:20:27.754Z",
+    "fetchedAt": "2026-10-06T16:58:00.343Z",
     "topics": [
       {
         "name": "公众号／CreateAMind",
@@ -112,7 +112,7 @@ window.DASH_DATA = {
       "ok": false,
       "label": "Claude",
       "windows": [],
-      "fetchedAt": "2026-10-07T00:20:27.753+08:00",
+      "fetchedAt": "2026-10-07T00:58:00.342+08:00",
       "error": "未启用",
       "disabled": true
     },
@@ -120,7 +120,7 @@ window.DASH_DATA = {
       "ok": false,
       "label": "Codex",
       "windows": [],
-      "fetchedAt": "2026-10-07T00:20:27.754+08:00",
+      "fetchedAt": "2026-10-07T00:58:00.343+08:00",
       "error": "未启用",
       "disabled": true
     },
@@ -128,7 +128,7 @@ window.DASH_DATA = {
       "ok": false,
       "label": "Kimi",
       "windows": [],
-      "fetchedAt": "2026-10-07T00:20:27.754+08:00",
+      "fetchedAt": "2026-10-07T00:58:00.343+08:00",
       "error": "未启用",
       "disabled": true
     },
@@ -138,7 +138,7 @@ window.DASH_DATA = {
       "balance": null,
       "currency": "CNY",
       "detail": null,
-      "fetchedAt": "2026-10-07T00:20:27.754+08:00",
+      "fetchedAt": "2026-10-07T00:58:00.343+08:00",
       "error": "未启用",
       "disabled": true
     }
