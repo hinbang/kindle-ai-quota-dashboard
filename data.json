@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-06T23:01:10.341+08:00",
+  "updatedAt": "2026-10-07T00:20:27.882+08:00",
   "weather": {
     "ok": false,
     "description": null,
@@ -11,13 +11,13 @@
     "windDir": null,
     "place": null,
     "observedAt": null,
-    "fetchedAt": "2026-10-06T23:01:10.341+08:00",
+    "fetchedAt": "2026-10-07T00:20:27.882+08:00",
     "error": "未配置天气文件"
   },
   "quote": null,
   "knowledgeBase": {
     "ok": true,
-    "fetchedAt": "2026-10-06T15:01:10.207Z",
+    "fetchedAt": "2026-10-06T16:20:27.754Z",
     "topics": [
       {
         "name": "公众号／CreateAMind",
@@ -62,17 +62,12 @@
       "items": []
     },
     "trends": {
-      "recentSources": 0,
+      "recentSources": 51,
       "recentAtomicCards": 0,
       "pendingReview": 555,
       "published": 10,
       "synced": 10,
       "daily": [
-        {
-          "date": "2026-09-30",
-          "sources": 0,
-          "atomicCards": 0
-        },
         {
           "date": "2026-10-01",
           "sources": 0,
@@ -100,6 +95,11 @@
         },
         {
           "date": "2026-10-06",
+          "sources": 51,
+          "atomicCards": 0
+        },
+        {
+          "date": "2026-10-07",
           "sources": 0,
           "atomicCards": 0
         }
@@ -112,7 +112,7 @@
       "ok": false,
       "label": "Claude",
       "windows": [],
-      "fetchedAt": "2026-10-06T23:01:10.206+08:00",
+      "fetchedAt": "2026-10-07T00:20:27.753+08:00",
       "error": "未启用",
       "disabled": true
     },
@@ -120,7 +120,7 @@
       "ok": false,
       "label": "Codex",
       "windows": [],
-      "fetchedAt": "2026-10-06T23:01:10.207+08:00",
+      "fetchedAt": "2026-10-07T00:20:27.754+08:00",
       "error": "未启用",
       "disabled": true
     },
@@ -128,7 +128,7 @@
       "ok": false,
       "label": "Kimi",
       "windows": [],
-      "fetchedAt": "2026-10-06T23:01:10.207+08:00",
+      "fetchedAt": "2026-10-07T00:20:27.754+08:00",
       "error": "未启用",
       "disabled": true
     },
@@ -138,7 +138,7 @@
       "balance": null,
       "currency": "CNY",
       "detail": null,
-      "fetchedAt": "2026-10-06T23:01:10.207+08:00",
+      "fetchedAt": "2026-10-07T00:20:27.754+08:00",
       "error": "未启用",
       "disabled": true
     }
