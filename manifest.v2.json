@@ -10,7 +10,7 @@
       "description": "在越狱 Kindle 上全屏显示自托管的 AI 额度页面。",
       "artifacts": [
         {
-          "url": "kindle-ai-quota-dashboard_0.1.2_ustar.kpkg",
+          "url": "https://cdn.jsdelivr.net/gh/hinbang/kindle-ai-quota-dashboard@21dfb107495442c93528d8038a60388a0ef114de/kindle-ai-quota-dashboard_0.1.2_ustar.kpkg",
           "version": [
             0,
             1,
