@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-07T10:46:26.508+08:00",
+  "updatedAt": "2026-10-07T11:01:01.918+08:00",
   "weather": {
     "ok": false,
     "description": null,
@@ -11,13 +11,13 @@
     "windDir": null,
     "place": null,
     "observedAt": null,
-    "fetchedAt": "2026-10-07T10:46:26.508+08:00",
+    "fetchedAt": "2026-10-07T11:01:01.918+08:00",
     "error": "未配置天气文件"
   },
   "quote": null,
   "knowledgeBase": {
     "ok": true,
-    "fetchedAt": "2026-10-07T02:46:26.380Z",
+    "fetchedAt": "2026-10-07T03:01:01.791Z",
     "topics": [
       {
         "name": "公众号／CreateAMind",
@@ -112,7 +112,7 @@
       "ok": false,
       "label": "Claude",
       "windows": [],
-      "fetchedAt": "2026-10-07T10:46:26.379+08:00",
+      "fetchedAt": "2026-10-07T11:01:01.789+08:00",
       "error": "未启用",
       "disabled": true
     },
@@ -120,7 +120,7 @@
       "ok": false,
       "label": "Codex",
       "windows": [],
-      "fetchedAt": "2026-10-07T10:46:26.380+08:00",
+      "fetchedAt": "2026-10-07T11:01:01.790+08:00",
       "error": "未启用",
       "disabled": true
     },
@@ -128,7 +128,7 @@
       "ok": false,
       "label": "Kimi",
       "windows": [],
-      "fetchedAt": "2026-10-07T10:46:26.380+08:00",
+      "fetchedAt": "2026-10-07T11:01:01.790+08:00",
       "error": "未启用",
       "disabled": true
     },
@@ -138,7 +138,7 @@
       "balance": null,
       "currency": "CNY",
       "detail": null,
-      "fetchedAt": "2026-10-07T10:46:26.380+08:00",
+      "fetchedAt": "2026-10-07T11:01:01.790+08:00",
       "error": "未启用",
       "disabled": true
     }
