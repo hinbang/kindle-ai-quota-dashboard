@@ -10,11 +10,11 @@
       "description": "在越狱 Kindle 上全屏显示自托管的 AI 额度页面。",
       "artifacts": [
         {
-          "url": "kindle-ai-quota-dashboard_0.1.1_kindlehf-kindlepw2.kpkg",
+          "url": "kindle-ai-quota-dashboard_0.1.2_ustar.kpkg",
           "version": [
             0,
             1,
-            1
+            2
           ],
           "dependencies": [],
           "supported_platforms": null
