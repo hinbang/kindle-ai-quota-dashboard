@@ -37,7 +37,7 @@ fs.writeFileSync(launchPath, launch, 'utf8');
 
 if (fs.existsSync(output)) fs.rmSync(output);
 const command = process.platform === 'win32' ? 'tar.exe' : 'tar';
-const result = spawnSync(command, ['-czf', output, '-C', stageDir, '.'], {
+const result = spawnSync(command, ['--format', 'ustar', '-czf', output, '-C', stageDir, '.'], {
   encoding: 'utf8',
   windowsHide: true,
   env: { ...process.env, COPYFILE_DISABLE: '1' },
