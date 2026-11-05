@@ -24,7 +24,7 @@ body {
 .clock { font-size:56px; font-weight:700; line-height:.9; letter-spacing:-3px; }
 .date-row { display:flex; gap:16px; margin-top:9px; font-size:20px; color:var(--mid); }
 .battery { margin-top:7px; font-size:17px; color:var(--mid); }
-.brand { text-align:right; padding-right:74px; }
+.brand { text-align:right; padding-right:14px; }
 .brand h1 { font-size:34px; line-height:1.05; letter-spacing:.04em; }
 .brand p { margin-top:6px; font-size:15px; color:var(--mid); letter-spacing:.18em; }
 .ai-strip {
@@ -44,22 +44,21 @@ body {
   font:700 18px/1.1 Arial,'PingFang SC',sans-serif; letter-spacing:.04em;
 }
 .tab.active { background:var(--fg); color:#fff; }
+.close-hint { margin-left:auto; font:13px/1.2 Arial,sans-serif; color:var(--light); }
 
-/* Close affordance: top-right corner, mirrored by a touch zone in the launcher. */
+/* Close affordance: bottom-right, mirrored by a touch zone in the launcher. */
 .close-btn {
-  position:fixed; bottom:14px; right:14px; width:58px; height:58px; z-index:50;
+  position:fixed; bottom:14px; right:14px; width:58px; height:58px; z-index:60;
   display:flex; align-items:center; justify-content:center;
   border:3px solid #000; background:#fff; color:#000;
   font:700 30px/1 Arial,sans-serif; cursor:pointer;
 }
 .close-btn:active { background:#000; color:#fff; }
-.close-hint { margin-left:auto; font:13px/1.2 Arial,sans-serif; color:var(--light); }
 
 /* ===== Pages ===== */
 .page { display:none; flex:1; min-height:0; margin-top:12px; }
 .page.active { display:grid; gap:16px; }
 #pageOverview { grid-template-columns:1.24fr 1fr 1fr; }
-#pageCloud { grid-template-columns:1fr; }
 
 .panel { border:2px solid var(--border); background:var(--card); padding:16px 18px; overflow:hidden; display:flex; flex-direction:column; min-height:0; }
 .panel-head { display:flex; justify-content:space-between; align-items:baseline; border-bottom:2px solid var(--fg); padding-bottom:8px; margin-bottom:12px; flex-shrink:0; }
@@ -95,44 +94,70 @@ body {
 .spark-day { height:19px; margin-top:4px; font:11px/1 Arial,sans-serif; color:var(--light); }
 .legend { display:flex; gap:14px; margin-top:auto; padding-top:8px; font:12px/1 Arial,sans-serif; color:var(--light); flex-shrink:0; }
 
-/* Word cloud */
-.cloud-wrap { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-.cloud { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; align-content:center; gap:6px 22px; width:100%; height:100%; }
-.cloud-term { display:inline-block; line-height:1.02; white-space:nowrap; color:#111; }
+/* ===== Word cloud: full-bleed, centre-out packing ===== */
+#pageCloud { grid-template-columns:1fr; }
+#pageCloud .panel { position:relative; border:0; background:transparent; padding:0; overflow:hidden; }
+#pageCloud .panel-head {
+  position:absolute; top:0; left:0; right:0; z-index:2; margin:0; padding:2px 6px 6px;
+  border-bottom:0; background:transparent;
+}
+#pageCloud .panel-title { font-size:18px; }
+#pageCloud .panel-meta { font-size:13px; }
+.cloud-wrap { position:absolute; top:26px; left:0; right:0; bottom:0; overflow:hidden; }
+.cloud { position:relative; width:100%; height:100%; }
+.cloud-term { position:absolute; white-space:nowrap; line-height:1; color:#111; font-family:Arial,'PingFang SC','Microsoft YaHei',sans-serif; }
 .cloud-term.w1 { color:#000; font-weight:700; }
-.cloud-term.w2 { color:#1a1a1a; }
+.cloud-term.w2 { color:#1c1c1c; font-weight:700; }
 .cloud-term.w3 { color:#4a4a4a; }
 .cloud-term.w4 { color:#6e6e6e; }
-.cloud-empty { text-align:center; color:var(--light); font-size:20px; }
-.cloud-tip { flex-shrink:0; margin-top:6px; font:13px/1.4 Arial,sans-serif; color:var(--light); }
+.cloud-empty { position:absolute; top:45%; left:0; right:0; text-align:center; color:var(--light); font-size:20px; }
+
+/* Page 2 takes the whole screen: the header folds away, only tabs + cloud remain. */
+body.cloud-mode .header { display:none; }
+body.cloud-mode { padding:10px 14px 8px; }
+body.cloud-mode .tabs { margin-top:0; }
+body.cloud-mode #pageCloud { margin-top:6px; }
+body.cloud-mode #pageCloud .panel-head { position:absolute; left:8px; right:auto; top:auto; bottom:0; padding:0; margin:0; border:0; }
+body.cloud-mode #pageCloud .panel-title { display:none; }
+body.cloud-mode .panel-meta { font-size:12px; opacity:.6; }
+body.cloud-mode .cloud-wrap { top:0; }
 
 .footer { margin-top:12px; border-top:2px solid var(--fg); padding-top:8px; padding-right:76px; display:flex; justify-content:space-between; font:15px/1.2 Arial,sans-serif; color:var(--mid); flex-shrink:0; }
 .footer .warn { font-weight:700; color:#000; }
 
-/* ===== Portrait ===== */
+/* ===== Portrait (skipped while the board is rotated sideways) ===== */
 @media (max-aspect-ratio: 1/1) {
-  body { padding:30px 32px 22px; }
-  .header { grid-template-columns:330px minmax(0,1fr); gap:20px; padding-bottom:16px; }
-  .clock { font-size:70px; letter-spacing:-4px; }
-  .date-row { margin-top:12px; font-size:22px; }
-  .battery { margin-top:9px; font-size:18px; }
-  .brand h1 { font-size:36px; }
-  .brand p { font-size:17px; }
-  .ai-strip { margin-top:14px; padding:10px 14px; font-size:19px; }
-  .tab { font-size:19px; min-width:170px; padding:11px 20px; }
-  #pageOverview { grid-template-columns:1.06fr .94fr; grid-template-rows:minmax(0,1.3fr) minmax(0,1fr); }
-  #pageOverview .topics { grid-row:1 / span 2; }
-  .panel { padding:20px 22px; }
-  .panel-title { font-size:26px; }
-  .topic-list { gap:16px; }
-  .topic-name { font-size:21px; }
-  .today-title { font-size:20px; }
-  .metric-value { font-size:34px; }
-  .spark { flex-basis:110px; height:110px; }
-  .footer { margin-top:16px; padding-top:10px; font-size:16px; }
+  html:not(.rot90) body { padding:30px 32px 22px; }
+  html:not(.rot90) .header { grid-template-columns:330px minmax(0,1fr); gap:20px; padding-bottom:16px; }
+  html:not(.rot90) .clock { font-size:70px; letter-spacing:-4px; }
+  html:not(.rot90) .date-row { margin-top:12px; font-size:22px; }
+  html:not(.rot90) .battery { margin-top:9px; font-size:18px; }
+  html:not(.rot90) .brand h1 { font-size:36px; }
+  html:not(.rot90) .brand p { font-size:17px; }
+  html:not(.rot90) .ai-strip { margin-top:14px; padding:10px 14px; font-size:19px; }
+  html:not(.rot90) .tab { font-size:19px; min-width:170px; padding:11px 20px; }
+  html:not(.rot90) #pageOverview { grid-template-columns:1.06fr .94fr; grid-template-rows:minmax(0,1.3fr) minmax(0,1fr); }
+  html:not(.rot90) #pageOverview .topics { grid-row:1 / span 2; }
+  html:not(.rot90) .panel { padding:20px 22px; }
+  html:not(.rot90) .panel-title { font-size:26px; }
+  html:not(.rot90) .topic-list { gap:16px; }
+  html:not(.rot90) .topic-name { font-size:21px; }
+  html:not(.rot90) .today-title { font-size:20px; }
+  html:not(.rot90) .metric-value { font-size:34px; }
+  html:not(.rot90) .spark { flex-basis:110px; height:110px; }
+  html:not(.rot90) .footer { margin-top:16px; padding-top:10px; font-size:16px; }
 }
 
-/* ===== Small screens ===== */
+/* ===== Rotated: portrait screen, landscape content ===== */
+html.rot90 body {
+  position:fixed; top:0; left:0; padding:26px 34px 18px;
+  width:100vh; height:100vw;
+  transform-origin:top left;
+  transform:rotate(90deg) translateY(-100%);
+}
+html.rot90 #pageOverview { grid-template-columns:1.24fr 1fr 1fr; }
+
+/* ===== Small screens / desktop preview ===== */
 @media (max-width:820px) {
   body { padding:12px 14px 9px; }
   .header { grid-template-columns:minmax(0,1fr) auto; gap:9px; padding-bottom:6px; border-width:2px; }
@@ -144,6 +169,7 @@ body {
   .ai-strip { margin-top:5px; padding:3px 6px; font-size:9px; gap:6px; border-width:1px; }
   .tabs { margin-top:5px; gap:5px; }
   .tab { min-width:70px; padding:4px 8px; font-size:9px; border-width:1px; }
+  .close-hint { font-size:7px; }
   .page { margin-top:5px; gap:6px; }
   #pageOverview { grid-template-columns:1fr 1fr; grid-template-rows:minmax(0,1.35fr) minmax(0,1fr); }
   #pageOverview .topics { grid-row:1 / span 2; }
@@ -166,9 +192,10 @@ body {
   .spark { flex-basis:30px; height:30px; gap:3px; }
   .spark-day { height:7px; font-size:5px; }
   .legend { font-size:5px; }
-  .cloud { gap:2px 8px; }
-  .cloud-tip { font-size:6px; }
-  .footer { margin-top:4px; padding-top:2px; border-width:1px; font-size:6px; }
+  #pageCloud .panel-title { font-size:10px; }
+  #pageCloud .panel-meta { font-size:7px; }
+  .footer { margin-top:4px; padding-top:2px; border-width:1px; font-size:6px; padding-right:40px; }
+  .close-btn { width:26px; height:26px; font-size:14px; bottom:6px; right:6px; border-width:2px; }
 }
 </style>
 </head>
@@ -193,7 +220,7 @@ body {
 <nav class="tabs sans">
   <button class="tab active" id="tabOverview" data-page="1">① 总览</button>
   <button class="tab" id="tabCloud" data-page="2">② 关键词云</button>
-  <span class="close-hint">轻触右下角 ✕ 返回 Kindle；无响应时按电源键或长按电源键重启</span>
+  <span class="close-hint">轻触左下角 ✕ 返回 Kindle；无响应时按电源键</span>
 </nav>
 
 <main class="page active" id="pageOverview">
@@ -224,8 +251,7 @@ body {
 <main class="page" id="pageCloud">
   <section class="panel">
     <div class="panel-head"><h2 class="panel-title">关键词云</h2><span class="panel-meta sans" id="cloudMeta">--</span></div>
-    <div class="cloud-wrap"><div class="cloud" id="cloudTerms"><div class="cloud-empty">等待关键词统计</div></div></div>
-    <div class="cloud-tip sans">字号 ≈ 该词在知识库文档中出现的广度的平方根；已剔除通用词与模板字段。</div>
+    <div class="cloud-wrap"><div class="cloud" id="cloudTerms"></div></div>
   </section>
 </main>
 
@@ -233,6 +259,6 @@ body {
 
 <script src="data.js"></script>
 <script src="live-endpoint.js"></script>
-<script src="dashboard-runtime.js?v=20261101b"></script>
+<script src="dashboard-runtime.js?v=20261104b"></script>
 </body>
 </html>
