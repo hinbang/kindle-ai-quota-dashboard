@@ -17,6 +17,7 @@ const { safeError } = require('../src/lib/common.cjs');
 const { ROOT, validateConfig } = require('../src/lib/config.cjs');
 const { collectProblems } = require('../scripts/check-public.cjs');
 const { collectKnowledgeBase } = require('../src/collectors/knowledgebase.cjs');
+const { collectWordCloud } = require('../src/collectors/wordcloud.cjs');
 
 test('knowledge-base collector aggregates capture folders, today titles, and trends', () => {
   const vault = fs.mkdtempSync(path.join(os.tmpdir(), 'kindle-kb-test-'));
@@ -78,6 +79,81 @@ test('knowledge-base collector aggregates capture folders, today titles, and tre
   } finally {
     fs.rmSync(vault, { recursive: true, force: true });
   }
+});
+
+test('word cloud keeps domain terms, drops function-word fragments, honors document frequency', () => {
+  const vault = fs.mkdtempSync(path.join(os.tmpdir(), 'kindle-cloud-test-'));
+  const write = (relative, content) => {
+    const target = path.join(vault, relative);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, content, 'utf8');
+  };
+  try {
+    write('cards/a.md', '科技创新推动产业升级，科技创新的路径依赖产业政策。');
+    write('cards/b.md', '科技创新与产业政策协同，区域创新体系同样重要。');
+    write('cards/c.md', '产业政策的重点是科技创新，科技创新的重点是人才。');
+    write('cards/d.md', '孤例词汇只出现一次的稀有短语，其余文字用于凑足文档长度以便参与统计。');
+
+    const result = collectWordCloud({
+      enabled: true,
+      vaultRoot: vault,
+      sources: ['cards'],
+      minDocs: 3,
+      limit: 20,
+    });
+
+    const terms = result.terms.map((item) => item.text);
+    assert.equal(result.ok, true);
+    assert.equal(result.docCount, 4);
+    assert.ok(terms.includes('科技创新'), `expected 科技创新 in ${terms.join(',')}`);
+    assert.ok(terms.includes('产业政策'), `expected 产业政策 in ${terms.join(',')}`);
+    assert.ok(!terms.includes('孤例'), 'single-document term must be filtered out');
+    assert.ok(!terms.some((term) => term.startsWith('的')), 'stop characters must be excluded');
+    assert.ok(!terms.includes('创新推动'), 'cross-boundary fragments must not survive');
+    const top = result.terms[0];
+    assert.ok(top.text === '科技创新' || top.text === '产业政策');
+    assert.equal(top.weight, 1);
+    for (const item of result.terms) {
+      assert.ok(item.weight > 0 && item.weight <= 1);
+      assert.ok(Number.isInteger(item.count) && item.count >= 3);
+    }
+  } finally {
+    fs.rmSync(vault, { recursive: true, force: true });
+  }
+});
+
+test('word cloud prefers the longest stable phrase over its fragment', () => {
+  const vault = fs.mkdtempSync(path.join(os.tmpdir(), 'kindle-cloud-frag-'));
+  const write = (relative, content) => {
+    const target = path.join(vault, relative);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, content, 'utf8');
+  };
+  try {
+    for (const name of ['a', 'b', 'c', 'd']) {
+      write(`cards/${name}.md`, '世界模型需要预测任务相关特征，世界模型不等于逐像素重建。');
+    }
+    const result = collectWordCloud({
+      enabled: true,
+      vaultRoot: vault,
+      sources: ['cards'],
+      minDocs: 3,
+      limit: 30,
+    });
+    const terms = result.terms.map((item) => item.text);
+    assert.ok(terms.includes('世界模型'));
+    assert.ok(!terms.includes('世界模'), 'truncated fragment must be removed');
+    assert.ok(!terms.includes('界模型'), 'truncated fragment must be removed');
+  } finally {
+    fs.rmSync(vault, { recursive: true, force: true });
+  }
+});
+
+test('word cloud reports unavailable without a corpus', () => {
+  const result = collectWordCloud({ enabled: false });
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.terms, []);
+  assert.equal(typeof result.error, 'string');
 });
 
 test('demo snapshot passes the public schema', () => {
@@ -198,7 +274,7 @@ test('browser runtime restores a valid cache and rejects older replacement data'
   const storage = new Map();
   const fresh = demoSnapshot();
   runBrowserRuntime(fresh, storage);
-  const cacheKey = 'kindle_ai_quota_cache_v2';
+  const cacheKey = 'kindle_ai_quota_cache_v3';
   const cached = storage.get(cacheKey);
   assert.ok(cached, 'fresh data should be cached');
 
@@ -206,6 +282,10 @@ test('browser runtime restores a valid cache and rejects older replacement data'
   assert.match(restored.nodes.get('#aiSummary').textContent, /DeepSeek.*12\.34/);
   assert.match(restored.nodes.get('#topicList').innerHTML, /科技创新/);
   assert.match(restored.nodes.get('#todayList').innerHTML, /世界模型/);
+  assert.match(restored.nodes.get('#cloudTerms').innerHTML, /科技创新/);
+  assert.match(restored.nodes.get('#cloudTerms').innerHTML, /font-size:/);
+  assert.equal(restored.nodes.get('#pageOverview').className, 'page active');
+  assert.equal(restored.nodes.get('#pageCloud').className, 'page');
 
   const older = demoSnapshot();
   older.updatedAt = '2025-01-01T00:00:00+08:00';

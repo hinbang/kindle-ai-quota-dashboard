@@ -9,7 +9,7 @@ const { version } = require('../package.json');
 const sourceDir = path.join(ROOT, 'kindle', 'package');
 const releaseDir = path.join(ROOT, 'release');
 const stageDir = path.join(releaseDir, `kindle-ai-quota-dashboard-${version}`);
-const output = path.join(releaseDir, `kindle-ai-quota-dashboard_${version}_kindlehf-kindlepw2.kpkg`);
+const output = path.join(releaseDir, `kindle-ai-quota-dashboard_${version}_ustar.kpkg`);
 const dashboardUrl = String(process.env.DASHBOARD_URL || '').trim().replace(/\/+$/, '');
 
 function copyTree(source, destination) {

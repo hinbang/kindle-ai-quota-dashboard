@@ -1,6 +1,6 @@
 {
   "name": "kindle-ai-quota-dashboard",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "把本机 AI 服务额度安全地显示在越狱 Kindle 上。",
   "license": "MIT",

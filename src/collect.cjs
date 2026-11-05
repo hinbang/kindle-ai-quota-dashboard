@@ -7,6 +7,7 @@ const { collectCodex } = require('./collectors/codex.cjs');
 const { collectDeepSeek } = require('./collectors/deepseek.cjs');
 const { collectKimi } = require('./collectors/kimi.cjs');
 const { collectKnowledgeBase } = require('./collectors/knowledgebase.cjs');
+const { collectWordCloud } = require('./collectors/wordcloud.cjs');
 const { ROOT, loadConfig } = require('./lib/config.cjs');
 const {
   isoBeijing,
@@ -144,6 +145,29 @@ function demoSnapshot() {
       },
       error: null,
     },
+    wordCloud: {
+      ok: true,
+      fetchedAt: now,
+      docCount: 128,
+      terms: [
+        { text: '科技创新', count: 34, weight: 1 },
+        { text: '产业政策', count: 29, weight: 0.86 },
+        { text: '人工智能', count: 26, weight: 0.78 },
+        { text: '基础研究', count: 22, weight: 0.68 },
+        { text: '人才发展', count: 19, weight: 0.61 },
+        { text: '区域创新', count: 16, weight: 0.53 },
+        { text: '成果转化', count: 14, weight: 0.47 },
+        { text: '技术扩散', count: 12, weight: 0.41 },
+        { text: '创新生态', count: 11, weight: 0.38 },
+        { text: '产业链', count: 10, weight: 0.35 },
+        { text: '实验室', count: 9, weight: 0.32 },
+        { text: '供应链', count: 8, weight: 0.29 },
+        { text: '商业模式', count: 7, weight: 0.26 },
+        { text: '不确定性', count: 6, weight: 0.23 },
+        { text: '概念验证', count: 5, weight: 0.2 },
+      ],
+      error: null,
+    },
     sources: {
       claude: {
         ok: true,
@@ -194,11 +218,18 @@ async function realSnapshot(config) {
     collectDeepSeek(providers.deepseek),
     Promise.resolve(collectKnowledgeBase(config.knowledgeBase || {})),
   ]);
+  const wordCloudConfig = (config.knowledgeBase && config.knowledgeBase.wordCloud) || {};
+  const wordCloud = collectWordCloud({
+    ...wordCloudConfig,
+    enabled: Boolean(wordCloudConfig.enabled),
+    vaultRoot: wordCloudConfig.vaultRoot || (config.knowledgeBase && config.knowledgeBase.vaultRoot) || '',
+  });
   return {
     updatedAt: isoBeijing(),
     weather: readWeather(config.weatherFile),
     quote: readQuote(config.quoteFile),
     knowledgeBase,
+    wordCloud,
     sources: { claude, codex, kimi, deepseek },
   };
 }
@@ -238,6 +269,10 @@ function validateSnapshot(snapshot) {
       !Array.isArray(snapshot.knowledgeBase.topics) || !snapshot.knowledgeBase.today ||
       !snapshot.knowledgeBase.trends || !Array.isArray(snapshot.knowledgeBase.trends.daily)) {
     throw new Error('快照缺少 knowledgeBase 或字段不完整');
+  }
+  if (!snapshot.wordCloud || typeof snapshot.wordCloud.ok !== 'boolean' ||
+      !Array.isArray(snapshot.wordCloud.terms)) {
+    throw new Error('快照缺少 wordCloud 或字段不完整');
   }
   for (const name of SOURCE_NAMES) {
     const source = snapshot.sources[name];

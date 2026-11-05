@@ -6,7 +6,7 @@
     endpointPointer: 'live-endpoint.js',
     pollEvery: 3 * 60 * 1000,
     pollOffset: 5000,
-    cacheKey: 'kindle_ai_quota_cache_v2',
+    cacheKey: 'kindle_ai_quota_cache_v3',
     maxCacheAge: 24 * 60 * 60 * 1000,
     quietStart: 3,
     quietEnd: 8
@@ -56,9 +56,14 @@
       Array.isArray(value.topics) && value.today && Array.isArray(value.today.items) &&
       value.trends && Array.isArray(value.trends.daily);
   }
+  function validWordCloud(value) {
+    return !!value && typeof value.ok === 'boolean' && validTime(value.fetchedAt, false) &&
+      Array.isArray(value.terms);
+  }
   function validPayload(data) {
     var index;
     if (!data || !validTime(data.updatedAt, false) || !data.sources || !validWeather(data.weather) || !validKnowledgeBase(data.knowledgeBase)) return false;
+    if (!validWordCloud(data.wordCloud)) return false;
     for (index = 0; index < sourceNames.length; index += 1) if (!validSource(sourceNames[index], data.sources[sourceNames[index]])) return false;
     return true;
   }
@@ -174,6 +179,48 @@
     updateTopics(kb); updateToday(kb.today); updateTrends(kb.trends);
   }
 
+  function cloudSize(weight) {
+    var w = typeof weight === 'number' && isFinite(weight) ? weight : 0.1;
+    w = Math.max(0.05, Math.min(1, w));
+    return 16 + Math.round(Math.sqrt(w) * 62);
+  }
+  function updateWordCloud(cloud) {
+    var html = '';
+    var terms = (cloud && cloud.terms) || [];
+    var max = 0;
+    terms.forEach(function (item) { max = Math.max(max, Number(item.count) || 0); });
+    terms.forEach(function (item, index) {
+      var size = cloudSize(item.weight);
+      var tone = index < 3 ? 'w1' : (index < 10 ? 'w2' : (index < 22 ? 'w3' : 'w4'));
+      html += '<span class="cloud-term ' + tone + '" style="font-size:' + size + 'px" title="' + escapeHtml(item.count) + '">' + escapeHtml(item.text) + '</span>';
+    });
+    ui.html(ui.find('cloudTerms'), html || '<div class="cloud-empty">暂无关键词</div>');
+    if (ui.find('cloudMeta')) {
+      ui.text('cloudMeta', terms.length
+        ? terms.length + ' 个词 · ' + ((cloud && cloud.docCount) || 0) + ' 篇文档 · 最高 ' + max + ' 篇'
+        : ((cloud && cloud.error) || '暂无数据'));
+    }
+  }
+
+  function showPage(page) {
+    var target = page === 2 ? 2 : 1;
+    var overview = ui.find('pageOverview');
+    var cloud = ui.find('pageCloud');
+    var tab1 = ui.find('tabOverview');
+    var tab2 = ui.find('tabCloud');
+    if (overview) ui.className(overview, target === 1 ? 'page active' : 'page');
+    if (cloud) ui.className(cloud, target === 2 ? 'page active' : 'page');
+    if (tab1) ui.className(tab1, target === 1 ? 'tab active' : 'tab');
+    if (tab2) ui.className(tab2, target === 2 ? 'tab active' : 'tab');
+    state.page = target;
+  }
+  function bindTabs() {
+    var tab1 = ui.find('tabOverview');
+    var tab2 = ui.find('tabCloud');
+    if (tab1) tab1.onclick = function () { showPage(1); };
+    if (tab2) tab2.onclick = function () { showPage(2); };
+  }
+
   function present(data, fromCache) {
     if (!validPayload(data)) return false;
     if (state.renderedAt && timestamp(data.updatedAt) < timestamp(state.renderedAt)) return false;
@@ -181,7 +228,7 @@
     state.latest = data; state.usingCache = !!fromCache;
     if (data.updatedAt !== state.renderedAt) {
       state.renderedAt = data.updatedAt;
-      updateAiSummary(data.sources); updateKnowledgeBase(data.knowledgeBase);
+      updateAiSummary(data.sources); updateKnowledgeBase(data.knowledgeBase); updateWordCloud(data.wordCloud);
     }
     updateFreshness(); return true;
   }
@@ -229,6 +276,8 @@
   }
 
   if (!present(win.DASH_DATA, false)) showValidatedCache();
+  bindTabs();
+  showPage(Number(queryValue('page')) === 2 ? 2 : 1);
   updateClock(); updateBattery();
   if (!isQuiet()) refresh();
   scheduleRefresh(); scheduleMinuteClock();

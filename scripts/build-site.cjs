@@ -36,8 +36,9 @@ const endpoint = process.env.DASHBOARD_URL
 fs.writeFileSync(path.join(distDir, 'live-endpoint.js'),
   `window.DASH_LIVE_ENDPOINT = '${endpoint}';\n`, 'utf8');
 fs.writeFileSync(path.join(distDir, '.nojekyll'), '', 'utf8');
-const packageArtifact = path.join(releaseDir, `kindle-ai-quota-dashboard_${version}_kindlehf-kindlepw2.kpkg`);
-const publicArtifact = path.join(distDir, `kindle-ai-quota-dashboard_${version}_kindlehf-kindlepw2.kpkg`);
+const artifactFile = `kindle-ai-quota-dashboard_${version}_ustar.kpkg`;
+const packageArtifact = path.join(releaseDir, artifactFile);
+const publicArtifact = path.join(distDir, artifactFile);
 if (!fs.existsSync(packageArtifact)) throw new Error(`缺少 ${packageArtifact}。先运行 npm run package:kindle`);
 fs.copyFileSync(packageArtifact, publicArtifact);
 const manifest = {
@@ -51,7 +52,7 @@ const manifest = {
       author: 'Community contributors',
       description: '在越狱 Kindle 上全屏显示自托管的 AI 额度页面。',
       artifacts: [{
-        url: publicArtifact.split(path.sep).pop(),
+        url: artifactFile,
         version: version.split('.').map(Number),
         dependencies: [],
         supported_platforms: null,

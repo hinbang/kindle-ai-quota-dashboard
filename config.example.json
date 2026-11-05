@@ -8,7 +8,16 @@
     "vaultRoot": "~/KnowledgeBase/kb-vault",
     "topicLimit": 8,
     "todayTitleLimit": 5,
-    "trendDays": 7
+    "trendDays": 7,
+    "wordCloud": {
+      "enabled": false,
+      "sources": [
+        "knowledge/<topic>/atomic",
+        "weknora/<topic>/input"
+      ],
+      "limit": 45,
+      "minDocs": 4
+    }
   },
   "providers": {
     "deepseek": {
