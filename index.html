@@ -152,7 +152,9 @@ body.cloud-mode .cloud-wrap { top:0; }
 html.rot90 body {
   position:fixed; top:0; left:0; padding:26px 34px 18px;
   width:100vh; height:100vw;
+  -webkit-transform-origin:top left;
   transform-origin:top left;
+  -webkit-transform:rotate(90deg) translateY(-100%);
   transform:rotate(90deg) translateY(-100%);
 }
 html.rot90 #pageOverview { grid-template-columns:1.24fr 1fr 1fr; }
@@ -220,7 +222,8 @@ html.rot90 #pageOverview { grid-template-columns:1.24fr 1fr 1fr; }
 <nav class="tabs sans">
   <button class="tab active" id="tabOverview" data-page="1">① 总览</button>
   <button class="tab" id="tabCloud" data-page="2">② 关键词云</button>
-  <span class="close-hint">轻触左下角 ✕ 返回 Kindle；无响应时按电源键</span>
+  <button class="tab" id="rotateBtn">⟳ 横排</button>
+  <span class="close-hint">轻触右下角 ✕ 返回 Kindle；无响应时按电源键</span>
 </nav>
 
 <main class="page active" id="pageOverview">
