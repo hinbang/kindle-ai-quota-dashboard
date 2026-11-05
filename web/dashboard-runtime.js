@@ -219,6 +219,25 @@
     var tab2 = ui.find('tabCloud');
     if (tab1) tab1.onclick = function () { showPage(1); };
     if (tab2) tab2.onclick = function () { showPage(2); };
+    var close = ui.find('closeBtn');
+    if (close) close.onclick = function () { requestClose(); };
+  }
+
+  /**
+   * The page cannot kill the Kindle browser by itself. window.close() works on
+   * some builds; the launcher script simultaneously watches for a tap in this
+   * corner, so the same gesture exits either way.
+   */
+  function requestClose() {
+    var close = ui.find('closeBtn');
+    if (close) ui.textNode(close, '…');
+    try { win.close(); } catch (error) {}
+    try { if (win.open) { win.open('', '_self'); win.close(); } } catch (error) {}
+    setTimeout(function () {
+      if (close) ui.textNode(close, '✕');
+      var status = ui.find('dataStatus');
+      if (status) ui.textNode(status, '正在退出 · 若未返回请按电源键');
+    }, 600);
   }
 
   function present(data, fromCache) {
