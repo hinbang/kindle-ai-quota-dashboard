@@ -254,17 +254,20 @@
       var textWidth = 0;
       var textHeight = 0;
       var attempt = 0;
-      // Shrink a stubborn term before giving up, so the page still fills up.
-      while (attempt < 5) {
+      var pad = 16;
+      // Shrink, then tighten the gap, before giving up: small tail words still
+      // need to reach the page edges or the cloud looks half empty.
+      while (attempt < 8) {
+        pad = attempt < 2 ? 16 : (attempt < 5 ? 12 : 8);
         textWidth = Math.ceil(measureText(item.text, size));
         textHeight = Math.ceil(size * 1.06);
-        spot = findSpot(textWidth + 16, textHeight + 16, placed, width, height, cx, cy);
+        spot = findSpot(textWidth + pad, textHeight + pad, placed, width, height, cx, cy);
         if (spot) break;
-        size = Math.max(11, Math.round(size * 0.82));
+        size = Math.max(10, Math.round(size * 0.85));
         attempt += 1;
       }
       if (!spot) return;
-      placed.push({ x: spot.x, y: spot.y, w: textWidth + 16, h: textHeight + 16 });
+      placed.push({ x: spot.x, y: spot.y, w: textWidth + pad, h: textHeight + pad });
       var tone = index < 3 ? 'w1' : (index < 10 ? 'w2' : (index < 24 ? 'w3' : 'w4'));
       html += '<span class="cloud-term ' + tone + '" style="left:' + Math.round(spot.x + 8) + 'px;top:' + Math.round(spot.y + 8) + 'px;' +
         'font-size:' + size + 'px;line-height:' + textHeight + 'px">' + escapeHtml(item.text) + '</span>';
