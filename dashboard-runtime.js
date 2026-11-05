@@ -224,20 +224,19 @@
   }
 
   /**
-   * The page cannot kill the Kindle browser by itself. window.close() works on
-   * some builds; the launcher script simultaneously watches for a tap in this
-   * corner, so the same gesture exits either way.
+   * Closing the page is only a fallback: the launcher watches the bottom-right
+   * corner and kills the browser itself, which is what restores the Kindle UI.
+   * window.close() is delayed so the launcher can win first; if the page closes
+   * on its own the browser can stay alive showing white, which strands the GUI.
    */
   function requestClose() {
     var close = ui.find('closeBtn');
+    var status = ui.find('dataStatus');
     if (close) ui.textNode(close, '…');
-    try { win.close(); } catch (error) {}
-    try { if (win.open) { win.open('', '_self'); win.close(); } } catch (error) {}
+    if (status) ui.textNode(status, '正在退出…');
     setTimeout(function () {
-      if (close) ui.textNode(close, '✕');
-      var status = ui.find('dataStatus');
-      if (status) ui.textNode(status, '正在退出 · 若未返回请按电源键');
-    }, 600);
+      try { win.close(); } catch (error) {}
+    }, 1500);
   }
 
   function present(data, fromCache) {
