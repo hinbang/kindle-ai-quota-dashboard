@@ -333,6 +333,22 @@
       setTimeout(function () { relayoutCloud(); }, 30);
     }
   }
+  var ROT_KEY = 'kindle_board_rot';
+
+  function rotationOn() {
+    return String(doc.documentElement.className || '').indexOf('rot90') >= 0;
+  }
+
+  function setRotation(on, persist) {
+    ui.className(doc.documentElement, on ? 'rot90' : '');
+    var btn = ui.find('rotateBtn');
+    if (btn) ui.textNode(btn, on ? '⟲ 竖排' : '⟳ 横排');
+    if (persist) {
+      try { if (win.localStorage) win.localStorage.setItem(ROT_KEY, on ? '1' : '0'); } catch (error) {}
+    }
+    setTimeout(function () { relayoutCloud(); }, 40);
+  }
+
   function bindTabs() {
     var tab1 = ui.find('tabOverview');
     var tab2 = ui.find('tabCloud');
@@ -340,6 +356,8 @@
     if (tab2) tab2.onclick = function () { showPage(2); };
     var close = ui.find('closeBtn');
     if (close) close.onclick = function () { requestClose(); };
+    var rotate = ui.find('rotateBtn');
+    if (rotate) rotate.onclick = function () { setRotation(!rotationOn(), true); };
   }
 
   /**
@@ -413,12 +431,15 @@
   }
 
   if (!present(win.DASH_DATA, false)) showValidatedCache();
-  /* ?rotate=90 renders the whole board sideways so a portrait Kindle shows it landscape. */
+  /* Rotation comes from the URL first, then from the last in-page toggle. */
   (function applyRotation() {
     var rotate = queryValue('rotate');
-    var root = doc.documentElement;
-    if (!root || rotate === null || rotate === '') return;
-    ui.className(root, Number(rotate) === 90 ? 'rot90' : '');
+    var stored = null;
+    try { stored = win.localStorage ? win.localStorage.getItem(ROT_KEY) : null; } catch (error) {}
+    var wanted = (rotate !== null && rotate !== '')
+      ? Number(rotate) === 90
+      : stored === '1';
+    setRotation(wanted, false);
   }());
   bindTabs();
   showPage(Number(queryValue('page')) === 2 ? 2 : 1);
