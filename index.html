@@ -47,7 +47,7 @@ body {
 
 /* Close affordance: top-right corner, mirrored by a touch zone in the launcher. */
 .close-btn {
-  position:fixed; top:12px; right:14px; width:58px; height:58px; z-index:50;
+  position:fixed; bottom:14px; right:14px; width:58px; height:58px; z-index:50;
   display:flex; align-items:center; justify-content:center;
   border:3px solid #000; background:#fff; color:#000;
   font:700 30px/1 Arial,sans-serif; cursor:pointer;
@@ -106,7 +106,7 @@ body {
 .cloud-empty { text-align:center; color:var(--light); font-size:20px; }
 .cloud-tip { flex-shrink:0; margin-top:6px; font:13px/1.4 Arial,sans-serif; color:var(--light); }
 
-.footer { margin-top:12px; border-top:2px solid var(--fg); padding-top:8px; display:flex; justify-content:space-between; font:15px/1.2 Arial,sans-serif; color:var(--mid); flex-shrink:0; }
+.footer { margin-top:12px; border-top:2px solid var(--fg); padding-top:8px; padding-right:76px; display:flex; justify-content:space-between; font:15px/1.2 Arial,sans-serif; color:var(--mid); flex-shrink:0; }
 .footer .warn { font-weight:700; color:#000; }
 
 /* ===== Portrait ===== */
@@ -193,7 +193,7 @@ body {
 <nav class="tabs sans">
   <button class="tab active" id="tabOverview" data-page="1">① 总览</button>
   <button class="tab" id="tabCloud" data-page="2">② 关键词云</button>
-  <span class="close-hint">轻触右上角 ✕ 或按电源键返回 Kindle</span>
+  <span class="close-hint">轻触右下角 ✕ 返回 Kindle；无响应时按电源键或长按电源键重启</span>
 </nav>
 
 <main class="page active" id="pageOverview">
