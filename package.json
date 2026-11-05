@@ -13,6 +13,8 @@
     "collect": "node src/collect.cjs",
     "build": "node scripts/build-site.cjs",
     "serve": "node scripts/serve.cjs",
+    "publish": "npm run collect && npm run build && node scripts/publish-pages.cjs",
+    "publish:pages": "node scripts/publish-pages.cjs",
     "package:kindle": "node scripts/build-kpkg.cjs",
     "test": "node --test tests/core.test.cjs",
     "check": "node scripts/check-public.cjs && node --test tests/core.test.cjs"
