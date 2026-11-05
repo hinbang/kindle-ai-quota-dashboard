@@ -1,5 +1,5 @@
 window.DASH_DATA = {
-  "updatedAt": "2026-11-04T15:11:55.315+08:00",
+  "updatedAt": "2026-11-04T17:20:04.372+08:00",
   "weather": {
     "ok": false,
     "description": null,
@@ -11,13 +11,13 @@ window.DASH_DATA = {
     "windDir": null,
     "place": null,
     "observedAt": null,
-    "fetchedAt": "2026-11-04T15:11:55.315+08:00",
+    "fetchedAt": "2026-11-04T17:20:04.372+08:00",
     "error": "未配置天气文件"
   },
   "quote": null,
   "knowledgeBase": {
     "ok": true,
-    "fetchedAt": "2026-11-04T07:11:55.179Z",
+    "fetchedAt": "2026-11-04T09:20:04.094Z",
     "topics": [
       {
         "name": "公众号／CreateAMind",
@@ -133,12 +133,245 @@ window.DASH_DATA = {
     },
     "error": null
   },
+  "wordCloud": {
+    "ok": true,
+    "fetchedAt": "2026-11-04T09:20:04.223Z",
+    "docCount": 565,
+    "terms": [
+      {
+        "text": "AI",
+        "count": 94,
+        "weight": 1
+      },
+      {
+        "text": "社会",
+        "count": 48,
+        "weight": 0.64
+      },
+      {
+        "text": "治理",
+        "count": 46,
+        "weight": 0.61
+      },
+      {
+        "text": "基础研究",
+        "count": 30,
+        "weight": 0.52
+      },
+      {
+        "text": "人工智能",
+        "count": 30,
+        "weight": 0.52
+      },
+      {
+        "text": "政府",
+        "count": 37,
+        "weight": 0.49
+      },
+      {
+        "text": "基础设施",
+        "count": 27,
+        "weight": 0.47
+      },
+      {
+        "text": "教育",
+        "count": 29,
+        "weight": 0.39
+      },
+      {
+        "text": "不确定性",
+        "count": 22,
+        "weight": 0.38
+      },
+      {
+        "text": "结构性",
+        "count": 24,
+        "weight": 0.37
+      },
+      {
+        "text": "规模化",
+        "count": 23,
+        "weight": 0.35
+      },
+      {
+        "text": "改革",
+        "count": 26,
+        "weight": 0.35
+      },
+      {
+        "text": "科学家",
+        "count": 21,
+        "weight": 0.32
+      },
+      {
+        "text": "高校",
+        "count": 24,
+        "weight": 0.32
+      },
+      {
+        "text": "算法",
+        "count": 23,
+        "weight": 0.31
+      },
+      {
+        "text": "科技创新",
+        "count": 17,
+        "weight": 0.29
+      },
+      {
+        "text": "未来产业",
+        "count": 17,
+        "weight": 0.29
+      },
+      {
+        "text": "公司",
+        "count": 22,
+        "weight": 0.29
+      },
+      {
+        "text": "金融",
+        "count": 22,
+        "weight": 0.29
+      },
+      {
+        "text": "大学",
+        "count": 21,
+        "weight": 0.28
+      },
+      {
+        "text": "概念验证",
+        "count": 16,
+        "weight": 0.28
+      },
+      {
+        "text": "科技人才",
+        "count": 16,
+        "weight": 0.28
+      },
+      {
+        "text": "新技术",
+        "count": 18,
+        "weight": 0.28
+      },
+      {
+        "text": "实验室",
+        "count": 17,
+        "weight": 0.26
+      },
+      {
+        "text": "商业模式",
+        "count": 15,
+        "weight": 0.26
+      },
+      {
+        "text": "能源",
+        "count": 19,
+        "weight": 0.25
+      },
+      {
+        "text": "文化",
+        "count": 19,
+        "weight": 0.25
+      },
+      {
+        "text": "差异化",
+        "count": 16,
+        "weight": 0.24
+      },
+      {
+        "text": "供应链",
+        "count": 16,
+        "weight": 0.24
+      },
+      {
+        "text": "三阶段",
+        "count": 16,
+        "weight": 0.24
+      },
+      {
+        "text": "商业化",
+        "count": 16,
+        "weight": 0.24
+      },
+      {
+        "text": "技术扩散",
+        "count": 14,
+        "weight": 0.24
+      },
+      {
+        "text": "产业链",
+        "count": 15,
+        "weight": 0.23
+      },
+      {
+        "text": "机器人",
+        "count": 15,
+        "weight": 0.23
+      },
+      {
+        "text": "赋能",
+        "count": 17,
+        "weight": 0.23
+      },
+      {
+        "text": "工业",
+        "count": 17,
+        "weight": 0.23
+      },
+      {
+        "text": "综合",
+        "count": 17,
+        "weight": 0.23
+      },
+      {
+        "text": "创新生态",
+        "count": 13,
+        "weight": 0.22
+      },
+      {
+        "text": "技术创新",
+        "count": 13,
+        "weight": 0.22
+      },
+      {
+        "text": "大模型",
+        "count": 14,
+        "weight": 0.21
+      },
+      {
+        "text": "亿美元",
+        "count": 14,
+        "weight": 0.21
+      },
+      {
+        "text": "布局",
+        "count": 16,
+        "weight": 0.21
+      },
+      {
+        "text": "贡献",
+        "count": 16,
+        "weight": 0.21
+      },
+      {
+        "text": "流程",
+        "count": 16,
+        "weight": 0.21
+      },
+      {
+        "text": "落地",
+        "count": 16,
+        "weight": 0.21
+      }
+    ],
+    "error": null
+  },
   "sources": {
     "claude": {
       "ok": false,
       "label": "Claude",
       "windows": [],
-      "fetchedAt": "2026-11-04T15:11:55.178+08:00",
+      "fetchedAt": "2026-11-04T17:20:04.092+08:00",
       "error": "未启用",
       "disabled": true
     },
@@ -146,7 +379,7 @@ window.DASH_DATA = {
       "ok": false,
       "label": "Codex",
       "windows": [],
-      "fetchedAt": "2026-11-04T15:11:55.179+08:00",
+      "fetchedAt": "2026-11-04T17:20:04.093+08:00",
       "error": "未启用",
       "disabled": true
     },
@@ -154,7 +387,7 @@ window.DASH_DATA = {
       "ok": false,
       "label": "Kimi",
       "windows": [],
-      "fetchedAt": "2026-11-04T15:11:55.179+08:00",
+      "fetchedAt": "2026-11-04T17:20:04.093+08:00",
       "error": "未启用",
       "disabled": true
     },
@@ -164,7 +397,7 @@ window.DASH_DATA = {
       "balance": null,
       "currency": "CNY",
       "detail": null,
-      "fetchedAt": "2026-11-04T15:11:55.179+08:00",
+      "fetchedAt": "2026-11-04T17:20:04.093+08:00",
       "error": "未启用",
       "disabled": true
     }
