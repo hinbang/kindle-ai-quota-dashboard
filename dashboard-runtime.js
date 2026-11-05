@@ -179,27 +179,138 @@
     updateTopics(kb); updateToday(kb.today); updateTrends(kb.trends);
   }
 
-  function cloudSize(weight) {
-    var w = typeof weight === 'number' && isFinite(weight) ? weight : 0.1;
-    w = Math.max(0.05, Math.min(1, w));
-    return 16 + Math.round(Math.sqrt(w) * 62);
+  var cloudState = { terms: null, count: 0 };
+
+  function measureText(text, size) {
+    var canvas;
+    var context;
+    try {
+      canvas = doc.createElement('canvas');
+      context = canvas && canvas.getContext && canvas.getContext('2d');
+    } catch (error) {
+      context = null;
+    }
+    if (context) {
+      context.font = '700 ' + size + 'px Arial, "PingFang SC", sans-serif';
+      if (context.measureText) return context.measureText(String(text)).width;
+    }
+    var width = 0;
+    var value = String(text);
+    for (var i = 0; i < value.length; i += 1) {
+      width += value.charCodeAt(i) > 255 ? size : size * 0.56;
+    }
+    return width;
   }
-  function updateWordCloud(cloud) {
+
+  function overlaps(x, y, w, h, placed) {
+    for (var i = 0; i < placed.length; i += 1) {
+      var item = placed[i];
+      if (x < item.x + item.w && x + w > item.x && y < item.y + item.h && y + h > item.y) return true;
+    }
+    return false;
+  }
+
+  /** Archimedean spiral out of the centre: the heaviest term lands dead centre. */
+  function findSpot(w, h, placed, width, height, cx, cy) {
+    for (var step = 0; step < 6000; step += 1) {
+      var angle = step * 0.28;
+      var radius = 1.6 * step;
+      var x = cx + Math.cos(angle) * radius - w / 2;
+      var y = cy + Math.sin(angle) * radius * 0.75 - h / 2;
+      if (x < 0 || y < 0 || x + w > width || y + h > height) continue;
+      if (!overlaps(x, y, w, h, placed)) return { x: x, y: y };
+    }
+    return null;
+  }
+
+  function renderCloudLayout(container, terms) {
+    /* offsetWidth/Height give the unrotated box; getBoundingClientRect returns a
+       swapped AABB when the whole board is rotated 90 degrees. */
+    var width = Math.round(container.offsetWidth || 0);
+    var height = Math.round(container.offsetHeight || 0);
+    if (!width || !height) {
+      var box = container.getBoundingClientRect ? container.getBoundingClientRect() : null;
+      width = box ? Math.round(box.width) : 0;
+      height = box ? Math.round(box.height) : 0;
+    }
+    if (!width || !height) return false;
+
+    var maxCount = 1;
+    terms.forEach(function (item) { maxCount = Math.max(maxCount, Number(item.count) || 0); });
+
+    var shortest = Math.min(width, height);
+    var minSize = Math.max(12, Math.round(shortest * 0.017));
+    var maxSize = Math.max(minSize + 8, Math.round(shortest * 0.175));
+    var cx = width / 2;
+    var cy = height / 2;
+    var placed = [];
     var html = '';
+
+    terms.forEach(function (item, index) {
+      var count = Number(item.count) || 0;
+      var ratio = Math.max(0.02, count / maxCount);
+      var size = Math.round(minSize + (maxSize - minSize) * Math.pow(ratio, 0.38));
+      var spot = null;
+      var textWidth = 0;
+      var textHeight = 0;
+      var attempt = 0;
+      // Shrink a stubborn term before giving up, so the page still fills up.
+      while (attempt < 5) {
+        textWidth = Math.ceil(measureText(item.text, size));
+        textHeight = Math.ceil(size * 1.06);
+        spot = findSpot(textWidth + 16, textHeight + 16, placed, width, height, cx, cy);
+        if (spot) break;
+        size = Math.max(11, Math.round(size * 0.82));
+        attempt += 1;
+      }
+      if (!spot) return;
+      placed.push({ x: spot.x, y: spot.y, w: textWidth + 16, h: textHeight + 16 });
+      var tone = index < 3 ? 'w1' : (index < 10 ? 'w2' : (index < 24 ? 'w3' : 'w4'));
+      html += '<span class="cloud-term ' + tone + '" style="left:' + Math.round(spot.x + 8) + 'px;top:' + Math.round(spot.y + 8) + 'px;' +
+        'font-size:' + size + 'px;line-height:' + textHeight + 'px">' + escapeHtml(item.text) + '</span>';
+    });
+
+    ui.html(container, html || '<div class="cloud-empty">暂无可排布的关键词</div>');
+    return placed.length > 0;
+  }
+
+  function renderCloudFlow(container, terms) {
+    var html = '';
+    terms.forEach(function (item, index) {
+      var size = 16 + Math.round(Math.sqrt(Math.max(0.02, Number(item.weight) || 0.02)) * 54);
+      var tone = index < 3 ? 'w1' : (index < 10 ? 'w2' : (index < 22 ? 'w3' : 'w4'));
+      html += '<span class="cloud-term ' + tone + '" style="font-size:' + size + 'px">' + escapeHtml(item.text) + '</span>';
+    });
+    ui.html(container, html || '<div class="cloud-empty">暂无关键词</div>');
+  }
+
+  function updateWordCloud(cloud) {
     var terms = (cloud && cloud.terms) || [];
     var max = 0;
     terms.forEach(function (item) { max = Math.max(max, Number(item.count) || 0); });
-    terms.forEach(function (item, index) {
-      var size = cloudSize(item.weight);
-      var tone = index < 3 ? 'w1' : (index < 10 ? 'w2' : (index < 22 ? 'w3' : 'w4'));
-      html += '<span class="cloud-term ' + tone + '" style="font-size:' + size + 'px" title="' + escapeHtml(item.count) + '">' + escapeHtml(item.text) + '</span>';
-    });
-    ui.html(ui.find('cloudTerms'), html || '<div class="cloud-empty">暂无关键词</div>');
+    cloudState.terms = terms;
+    cloudState.count = terms.length;
+
+    var container = ui.find('cloudTerms');
+    if (container && terms.length) {
+      var laidOut = renderCloudLayout(container, terms);
+      if (!laidOut) renderCloudFlow(container, terms);
+    } else if (container) {
+      ui.html(container, '<div class="cloud-empty">暂无关键词</div>');
+    }
+
     if (ui.find('cloudMeta')) {
       ui.text('cloudMeta', terms.length
         ? terms.length + ' 个词 · ' + ((cloud && cloud.docCount) || 0) + ' 篇文档 · 最高 ' + max + ' 篇'
         : ((cloud && cloud.error) || '暂无数据'));
     }
+  }
+
+  /** Re-run the packed layout when page 2 becomes visible (hidden boxes have no size). */
+  function relayoutCloud() {
+    if (!cloudState.terms || !cloudState.terms.length) return;
+    var container = ui.find('cloudTerms');
+    if (container) renderCloudLayout(container, cloudState.terms);
   }
 
   function showPage(page) {
@@ -213,6 +324,11 @@
     if (tab1) ui.className(tab1, target === 1 ? 'tab active' : 'tab');
     if (tab2) ui.className(tab2, target === 2 ? 'tab active' : 'tab');
     state.page = target;
+    /* Page 2 uses the whole screen: the header collapses while the cloud is shown. */
+    ui.className(doc.body, target === 2 ? 'cloud-mode' : '');
+    if (target === 2) {
+      setTimeout(function () { relayoutCloud(); }, 30);
+    }
   }
   function bindTabs() {
     var tab1 = ui.find('tabOverview');
@@ -294,6 +410,13 @@
   }
 
   if (!present(win.DASH_DATA, false)) showValidatedCache();
+  /* ?rotate=90 renders the whole board sideways so a portrait Kindle shows it landscape. */
+  (function applyRotation() {
+    var rotate = queryValue('rotate');
+    var root = doc.documentElement;
+    if (!root || rotate === null || rotate === '') return;
+    ui.className(root, Number(rotate) === 90 ? 'rot90' : '');
+  }());
   bindTabs();
   showPage(Number(queryValue('page')) === 2 ? 2 : 1);
   updateClock(); updateBattery();
